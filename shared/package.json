@@ -1,0 +1,15 @@
+{
+    "name": "@sentinel/shared",
+    "version": "1.0.0",
+    "description": "Shared utilities for the Sentinel project",
+    "main": "index.js",
+    "scripts": {
+        "test": "jest"
+    },
+    "keywords": [
+        "sentinel",
+        "shared"
+    ],
+    "author": "Your Name",
+    "license": "MIT"
+}
