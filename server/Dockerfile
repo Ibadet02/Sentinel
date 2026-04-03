@@ -1,7 +1,10 @@
 FROM node:22.14.0-alpine
 WORKDIR /app
 RUN npm install -g pnpm
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY server/package.json ./server/
+COPY shared/package.json ./shared/
 RUN pnpm install
-COPY . .
+COPY server/ ./server/
+COPY shared/ ./shared/
 CMD [ "pnpm", "start" ]
