@@ -7,6 +7,9 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    volumes:
+      - ./server:/app/server
+      - ./shared:/app/shared
   db:
     image: postgres:17-alpine
     ports: 
@@ -15,3 +18,8 @@ services:
       POSTGRES_USER: sentinel
       POSTGRES_PASSWORD: sentinel_dev
       POSTGRES_DB: sentinel_db
+    volumes:
+     - sentinel_db_data:/var/lib/postgresql/data
+
+volumes:
+  sentinel_db_data:

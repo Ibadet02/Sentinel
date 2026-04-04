@@ -1,4 +1,4 @@
-FROM node:22.14.0-alpine
+FROM node:22.14.0-alpine AS build
 WORKDIR /app
 RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -7,4 +7,11 @@ COPY shared/package.json ./shared/
 RUN pnpm install
 COPY server/ ./server/
 COPY shared/ ./shared/
-CMD [ "pnpm", "start" ]
+
+
+FROM node:22.14.0-alpine AS production
+WORKDIR /app
+COPY --from=build /app/server/ ./server
+COPY --from=build /app/shared/ ./shared
+COPY --from=build /app/node_modules/ ./node_modules
+CMD [ "node", "server/index.js" ]
