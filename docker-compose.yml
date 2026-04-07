@@ -11,17 +11,18 @@ services:
       - ./server:/app/server
       - ./shared:/app/shared
     env_file:
-     - .env
+      - .env
+    command: npx tsx watch server/src/index.ts
   db:
     image: postgres:17-alpine
-    ports: 
+    ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes:
-     - sentinel_db_data:/var/lib/postgresql/data
+      - sentinel_db_data:/var/lib/postgresql/data
 
 volumes:
   sentinel_db_data:
