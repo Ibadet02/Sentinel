@@ -12,6 +12,8 @@ services:
       - ./shared:/app/shared
     env_file:
       - .env
+    environment:
+      - DATABASE_URL=postgresql://sentinel:sentinel_dev@db:5432/sentinel_db
     command: npx tsx watch server/src/index.ts
   db:
     image: postgres:17-alpine
