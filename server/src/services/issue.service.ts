@@ -22,3 +22,21 @@ export const getIssueById = async (id: number) => {
 
   return issue;
 };
+
+export const updateIssue = async (
+  id: number,
+  issueData: Prisma.IssueUpdateInput
+) => {
+  const updatedIssue = await prisma.issue.update({
+    where: { id },
+    data: issueData,
+  });
+
+  return updatedIssue;
+};
+
+export const deleteIssue = async (id: number) => {
+  await prisma.issue.delete({
+    where: { id },
+  });
+};
