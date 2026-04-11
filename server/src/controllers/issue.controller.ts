@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
 import * as issueService from "../services/issue.service";
+import {
+  createIssueSchema,
+  updateIssueSchema,
+} from "../validators/issue.validator";
 
 export const createIssue = async (req: Request, res: Response) => {
-  const issueData = req.body;
+  const issueData = createIssueSchema.parse(req.body);
   const createdIssue = await issueService.createIssue(issueData);
 
   res.status(201).json(createdIssue);
@@ -28,7 +32,7 @@ export const getIssueById = async (req: Request, res: Response) => {
 
 export const updateIssue = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
-  const issueData = req.body;
+  const issueData = updateIssueSchema.parse(req.body);
   const updatedIssue = await issueService.updateIssue(id, issueData);
 
   res.json(updatedIssue);
