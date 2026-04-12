@@ -15,7 +15,7 @@ jobs:
         env:
           POSTGRES_USER: sentinel
           POSTGRES_PASSWORD: sentinel_dev
-          POSTGRES_DB: sentinel_db
+          POSTGRES_DB: sentinel_test_db
         ports:
           - 5432:5432
         options: >-
@@ -44,9 +44,9 @@ jobs:
       - name: Run migrations
         run: cd server && npx prisma migrate deploy
         env:
-          DATABASE_URL: postgresql://sentinel:sentinel_dev@localhost:5432/sentinel_db
+          DATABASE_URL: postgresql://sentinel:sentinel_dev@localhost:5432/sentinel_test_db
 
       - name: Run tests
         run: cd server && pnpm test -- --run
         env:
-          DATABASE_URL: postgresql://sentinel:sentinel_dev@localhost:5432/sentinel_db
+          DATABASE_URL: postgresql://sentinel:sentinel_dev@localhost:5432/sentinel_test_db
