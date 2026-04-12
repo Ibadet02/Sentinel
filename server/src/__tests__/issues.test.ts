@@ -38,6 +38,9 @@ describe("POST /issues", () => {
 
 describe("GET /issues", () => {
   it("should return an array of issues", async () => {
+    const createResponse = await request(app)
+      .post("/issues")
+      .send({ title: "New title", status: "OPEN" });
     const response = await request(app).get("/issues");
 
     expect(Array.isArray(response.body)).toBe(true);
@@ -83,10 +86,12 @@ describe("PATCH /issues/:id", () => {
   });
 
   it("should return 404 for non-existent id", async () => {
-    const response = await request(app).patch("/issues/99999").send({title: "Non-existent record"});
+    const response = await request(app)
+      .patch("/issues/99999")
+      .send({ title: "Non-existent record" });
 
     expect(response.status).toBe(404);
-  })
+  });
 });
 
 describe("DELETE /issues/:id", () => {
@@ -106,5 +111,5 @@ describe("DELETE /issues/:id", () => {
     const response = await request(app).delete("/issues/99999");
 
     expect(response.status).toBe(404);
-  })
+  });
 });
