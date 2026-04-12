@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Prisma } from "../generated/prisma/client";
+import { z } from "zod";
 
 export const errorHandler = (
   err: Error,
@@ -12,6 +13,11 @@ export const errorHandler = (
       res.status(404).json({ error: "Record not found" });
       return;
     }
+  }
+
+  if (err instanceof z.ZodError) {
+    res.status(400).json({ error: err.issues });
+    return;
   }
 
   console.error(err);
