@@ -1,10 +1,12 @@
+import { Route, Routes } from "react-router-dom";
+import IssuesPage from "./pages/IssuesPage";
 
 function App() {
   return (
     <>
-      <div className="p-8 text-2xl font-bold font-blue-600">
-        Hello from Sentinel
-      </div>
+      <Routes>
+        <Route path="/" element={<IssuesPage />} />
+      </Routes>
     </>
   );
 }
