@@ -1,4 +1,5 @@
-export type IssueStatus = "OPEN" | "IN_PROGRESS" | "CLOSED";
+export const ISSUE_STASUSES = ["OPEN", "IN_PROGRESS", "CLOSED"] as const;
+export type IssueStatus = typeof ISSUE_STASUSES[number]
 
 export interface Issue {
   id: number;
