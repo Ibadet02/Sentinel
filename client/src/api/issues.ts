@@ -22,7 +22,7 @@ export const deleteIssue = async (id: number) => {
 
 export const updateIssue = async (
   id: number,
-  data: { title?: string; description?: string }
+  data: { title?: string; description?: string; status?: string }
 ) => {
   const response = await apiClient.patch(`/issues/${id}`, data);
 

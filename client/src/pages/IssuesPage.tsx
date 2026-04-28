@@ -1,14 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteIssue, getAllIssues, updateIssue } from "../api/issues";
 import CreateIssueForm from "../components/CreateIssueForm";
-import { ISSUE_STASUSES } from "@sentinel/shared";
+import { ISSUE_STATUSES, type Issue } from "@sentinel/shared";
+import { useState } from "react";
+import EditIssueModal from "../components/EditIssueModal";
 
 function IssuesPage() {
+  const [editingIssue, setEditingIssue] = useState<Issue | null>(null);
   const { data, isLoading, isError } = useQuery({
     queryKey: ["issues"],
     queryFn: getAllIssues,
   });
   const queryClient = useQueryClient();
+
   const deleteMutation = useMutation({
     mutationFn: deleteIssue,
     onSuccess: () => {
@@ -16,6 +20,10 @@ function IssuesPage() {
     },
   });
   const updateMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) =>
+      updateIssue(id, {
+        status,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["issues"] });
     },
@@ -34,30 +42,58 @@ function IssuesPage() {
       <CreateIssueForm />
       <h1 className="text-2xl font-bold mb-4">Issues</h1>
       <ul className="space-y-2">
-        {data?.map((issue) => (
-          <li
-            key={issue.id}
-            className="p-4 border rounded flex justify-between"
-          >
-            <div>
-              <div className="font-semibold">{issue.title}</div>
-              <select value={issue.status} className="text-sm text-gray-500">
-                {ISSUE_STASUSES.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <button
-              disabled={deleteMutation.isPending}
-              onClick={() => handleDelete(issue.id)}
-              className="px-4 py-2 text-white rounded cursor-pointer disabled:opacity-50 bg-red-700"
+        {data?.map((issue) => {
+          const isDeletingThis =
+            deleteMutation.variables === issue.id && deleteMutation.isPending;
+
+          return (
+            <li
+              key={issue.id}
+              className="p-4 border rounded flex justify-between"
             >
-              {deleteMutation.isPending ? "Deleting..." : "Delete"}
-            </button>
-          </li>
-        ))}
+              <div>
+                <div className="font-semibold">{issue.title}</div>
+                <select
+                  value={issue.status}
+                  className="text-sm text-gray-500"
+                  onChange={(e) =>
+                    updateMutation.mutate({
+                      id: issue.id,
+                      status: e.target.value,
+                    })
+                  }
+                >
+                  {ISSUE_STATUSES.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <button
+                  disabled={isDeletingThis}
+                  onClick={() => handleDelete(issue.id)}
+                  className="px-4 py-2 text-white rounded cursor-pointer disabled:opacity-50 bg-red-700"
+                >
+                  {isDeletingThis ? "Deleting..." : "Delete"}
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50 cursor-pointer ml-2"
+                  onClick={() => setEditingIssue(issue)}
+                >
+                  Edit
+                </button>
+              </div>
+            </li>
+          );
+        })}
+        {editingIssue && (
+          <EditIssueModal
+            issue={editingIssue}
+            onClose={() => setEditingIssue(null)}
+          />
+        )}
       </ul>
     </div>
   );

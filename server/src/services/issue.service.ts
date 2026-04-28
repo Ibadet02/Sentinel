@@ -10,7 +10,9 @@ export const createIssue = async (issueData: Prisma.IssueCreateInput) => {
 };
 
 export const getAllIssues = async () => {
-  const allIssues = await prisma.issue.findMany();
+  const allIssues = await prisma.issue.findMany({
+    orderBy: { createdAt: "desc" },
+  });
 
   return allIssues;
 };
