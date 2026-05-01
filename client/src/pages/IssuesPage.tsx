@@ -2,8 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteIssue, getAllIssues, updateIssue } from "../api/issues";
 import CreateIssueForm from "../components/CreateIssueForm";
 import { ISSUE_STATUSES, type Issue } from "@sentinel/shared";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EditIssueModal from "../components/EditIssueModal";
+import { Link } from "react-router-dom";
 
 function IssuesPage() {
   const [editingIssue, setEditingIssue] = useState<Issue | null>(null);
@@ -12,7 +13,6 @@ function IssuesPage() {
     queryFn: getAllIssues,
   });
   const queryClient = useQueryClient();
-
   const deleteMutation = useMutation({
     mutationFn: deleteIssue,
     onSuccess: () => {
@@ -28,6 +28,18 @@ function IssuesPage() {
       queryClient.invalidateQueries({ queryKey: ["issues"] });
     },
   });
+
+  useEffect(() => {
+    if (editingIssue) {
+      document.body.classList.add("overflow-hidden");
+    } else {
+      document.body.classList.remove("overflow-hidden");
+    }
+
+    return () => {
+      document.body.classList.remove("overflow-hidden");
+    };
+  }, [editingIssue]);
 
   const handleDelete = (id: number) => {
     deleteMutation.mutate(id);
@@ -52,7 +64,14 @@ function IssuesPage() {
               className="p-4 border rounded flex justify-between"
             >
               <div>
-                <div className="font-semibold">{issue.title}</div>
+                <div className="font-semibold">
+                  <Link
+                    to={`/issues/${issue.id}`}
+                    className="font-semibold hover:underline"
+                  >
+                    {issue.title}
+                  </Link>
+                </div>
                 <select
                   value={issue.status}
                   className="text-sm text-gray-500"
@@ -88,13 +107,13 @@ function IssuesPage() {
             </li>
           );
         })}
-        {editingIssue && (
-          <EditIssueModal
-            issue={editingIssue}
-            onClose={() => setEditingIssue(null)}
-          />
-        )}
       </ul>
+      {editingIssue && (
+        <EditIssueModal
+          issue={editingIssue}
+          onClose={() => setEditingIssue(null)}
+        />
+      )}
     </div>
   );
 }

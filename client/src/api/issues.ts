@@ -24,7 +24,13 @@ export const updateIssue = async (
   id: number,
   data: { title?: string; description?: string; status?: string }
 ) => {
-  const response = await apiClient.patch(`/issues/${id}`, data);
+  const response = await apiClient.patch<Issue>(`/issues/${id}`, data);
+
+  return response.data;
+};
+
+export const getIssueById = async (id: number) => {
+  const response = await apiClient.get<Issue>(`/issues/${id}`);
 
   return response.data;
 };
