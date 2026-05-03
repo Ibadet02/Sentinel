@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import "./config";
 import issueRouter from "./routes/issue.routes";
+import commentRouter from "./routes/comment.routes";
 import { errorHandler } from "./middleware/errorHandler";
 
 export const app = express();
@@ -19,4 +20,5 @@ app.get("/health", (_, res) => {
 });
 
 app.use("/issues", issueRouter);
+app.use("/comments", commentRouter);
 app.use(errorHandler);
