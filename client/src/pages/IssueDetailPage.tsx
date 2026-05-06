@@ -3,6 +3,7 @@ import { deleteIssue, getIssueById } from "../api/issues";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import EditIssueModal from "../components/EditIssueModal";
+import Comments from "../components/Comments";
 
 function IssueDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -65,6 +66,7 @@ function IssueDetailPage() {
       {isEditing && (
         <EditIssueModal issue={issue} onClose={() => setIsEditing(false)} />
       )}
+      <Comments issueId={issueId} />
     </div>
   );
 }
