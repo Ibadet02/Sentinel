@@ -3,6 +3,7 @@ import cors from "cors";
 import "./config";
 import issueRouter from "./routes/issue.routes";
 import commentRouter from "./routes/comment.routes";
+import authRouter from "./routes/auth.routes";
 import { errorHandler } from "./middleware/errorHandler";
 
 export const app = express();
@@ -21,4 +22,5 @@ app.get("/health", (_, res) => {
 
 app.use("/issues", issueRouter);
 app.use("/comments", commentRouter);
+app.use("/auth", authRouter);
 app.use(errorHandler);
