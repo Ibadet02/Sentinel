@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import "cookie-parser";
 import { verifyToken } from "../auth/jwt";
 import { getUserById } from "../services/auth.service";
 
@@ -23,14 +24,12 @@ export const requireAuth = async (
   res: Response,
   next: NextFunction
 ) => {
-  const authHeader = req.headers.authorization;
+  const token = req.cookies.token;
 
-  if (!authHeader || authHeader.startsWith("Bearer ")) {
+  if (!token) {
     res.status(401).json({ error: "Unauthorized" });
     return;
   }
-
-  const token = authHeader.slice("Bearer ".length);
 
   try {
     const payload = verifyToken(token);
