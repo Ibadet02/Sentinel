@@ -2,7 +2,9 @@ import type { Comment } from "@sentinel/shared";
 import { apiClient } from "./client";
 
 export const getCommentsForIssue = async (issueId: number) => {
-  const response = await apiClient.get<Comment[]>(`/issues/${issueId}/comments`);
+  const response = await apiClient.get<Comment[]>(
+    `/issues/${issueId}/comments`
+  );
 
   return response.data;
 };
@@ -13,7 +15,10 @@ export const createComment = async (
     content: string;
   }
 ) => {
-  const response = await apiClient.post<Comment>(`/issues/${issueId}/comments`, data);
+  const response = await apiClient.post<Comment>(
+    `/issues/${issueId}/comments`,
+    data
+  );
 
   return response.data;
 };
