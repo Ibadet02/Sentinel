@@ -1,5 +1,6 @@
 import type { Comment } from "@sentinel/shared";
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 interface CommentProps {
   comment: Comment;
@@ -10,14 +11,18 @@ interface CommentProps {
 }
 
 function CommentItem({
-  comment: { id, content, createdAt, updatedAt },
+  comment: { id, content, userId, author, createdAt, updatedAt },
   onDelete,
   onUpdate,
   isDeleting,
   isUpdating,
 }: CommentProps) {
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(content);
+
+  const isOwner = user?.id === userId;
+  const commentBy = isOwner ? "You" : author.name;
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -40,14 +45,28 @@ function CommentItem({
                 className="w-full p-2 border rounded"
               />
               <div>
-                <button onClick={() => handleEditSave(id)}>
+                <button
+                  onClick={() => handleEditSave(id)}
+                  disabled={isUpdating}
+                  className="px-3 py-1 mr-2 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 disabled:opacity-50 cursor-pointer"
+                >
                   {isUpdating ? "Saving..." : "Save"}
                 </button>
-                <button onClick={() => setIsEditing(false)}>Cancel</button>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="px-3 py-1 border border-gray-300 rounded text-sm hover:bg-gray-50 cursor-pointer"
+                >
+                  Cancel
+                </button>
               </div>
             </>
           ) : (
-            <p className="whitespace-pre-wrap">{content}</p>
+            <div>
+              <p className="text-xs text-gray-600 font-medium mb-1">
+                by {commentBy}
+              </p>
+              <p className="whitespace-pre-wrap">{content}</p>
+            </div>
           )}
         </div>
         <p className="text-xs text-gray-500 mt-1">
@@ -61,7 +80,7 @@ function CommentItem({
           </p>
         )}
       </div>
-      {!isEditing && (
+      {!isEditing && isOwner && (
         <div className="flex gap-3">
           <button
             onClick={() => onDelete(id)}

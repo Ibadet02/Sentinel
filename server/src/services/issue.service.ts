@@ -1,9 +1,15 @@
 import { Prisma } from "../generated/prisma/client";
 import { prisma } from "../prisma";
 
-export const createIssue = async (issueData: Prisma.IssueCreateInput) => {
+export const createIssue = async (
+  issueData: {
+    title: string;
+    description?: string;
+  },
+  userId: number
+) => {
   const issue = await prisma.issue.create({
-    data: issueData,
+    data: { ...issueData, userId },
   });
 
   return issue;
@@ -12,6 +18,7 @@ export const createIssue = async (issueData: Prisma.IssueCreateInput) => {
 export const getAllIssues = async () => {
   const allIssues = await prisma.issue.findMany({
     orderBy: { createdAt: "desc" },
+    include: { author: { select: { id: true, name: true } } },
   });
 
   return allIssues;
@@ -20,6 +27,7 @@ export const getAllIssues = async () => {
 export const getIssueById = async (id: number) => {
   const issue = await prisma.issue.findUnique({
     where: { id },
+    include: { author: { select: { id: true, name: true } } },
   });
 
   return issue;
@@ -32,6 +40,7 @@ export const updateIssue = async (
   const updatedIssue = await prisma.issue.update({
     where: { id },
     data: issueData,
+    include: { author: { select: { id: true, name: true } } },
   });
 
   return updatedIssue;

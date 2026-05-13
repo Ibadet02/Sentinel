@@ -5,8 +5,10 @@ import { ISSUE_STATUSES, type Issue } from "@sentinel/shared";
 import { useEffect, useState } from "react";
 import EditIssueModal from "../components/EditIssueModal";
 import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 function IssuesPage() {
+  const { user } = useAuth();
   const [editingIssue, setEditingIssue] = useState<Issue | null>(null);
   const { data, isLoading, isError } = useQuery({
     queryKey: ["issues"],
@@ -55,6 +57,8 @@ function IssuesPage() {
       <h1 className="text-2xl font-bold mb-4">Issues</h1>
       <ul className="space-y-2">
         {data?.map((issue) => {
+          const isOwner = user?.id === issue.userId;
+          const issueBy = isOwner ? "You" : issue.author.name;
           const isDeletingThis =
             deleteMutation.variables === issue.id && deleteMutation.isPending;
 
@@ -72,7 +76,9 @@ function IssuesPage() {
                     {issue.title}
                   </Link>
                 </div>
+                <div className="text-xs text-gray-600">by {issueBy}</div>
                 <select
+                  disabled={!isOwner}
                   value={issue.status}
                   className="text-sm text-gray-500"
                   onChange={(e) =>
@@ -89,21 +95,23 @@ function IssuesPage() {
                   ))}
                 </select>
               </div>
-              <div>
-                <button
-                  disabled={isDeletingThis}
-                  onClick={() => handleDelete(issue.id)}
-                  className="px-4 py-2 text-white rounded cursor-pointer disabled:opacity-50 bg-red-700"
-                >
-                  {isDeletingThis ? "Deleting..." : "Delete"}
-                </button>
-                <button
-                  className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50 cursor-pointer ml-2"
-                  onClick={() => setEditingIssue(issue)}
-                >
-                  Edit
-                </button>
-              </div>
+              {isOwner && (
+                <div>
+                  <button
+                    disabled={isDeletingThis}
+                    onClick={() => handleDelete(issue.id)}
+                    className="px-4 py-2 text-white rounded cursor-pointer disabled:opacity-50 bg-red-700"
+                  >
+                    {isDeletingThis ? "Deleting..." : "Delete"}
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50 cursor-pointer ml-2"
+                    onClick={() => setEditingIssue(issue)}
+                  >
+                    Edit
+                  </button>
+                </div>
+              )}
             </li>
           );
         })}

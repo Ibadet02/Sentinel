@@ -2,10 +2,11 @@ import { Prisma } from "../generated/prisma/client";
 import { prisma } from "../prisma";
 
 export const createComment = async (
-  commentData: Prisma.CommentUncheckedCreateInput
+  commentData: { content: string; issueId: number },
+  userId: number
 ) => {
   const comment = await prisma.comment.create({
-    data: commentData,
+    data: { ...commentData, userId },
   });
 
   return comment;
@@ -15,9 +16,19 @@ export const getCommentsForIssue = async (issueId: number) => {
   const comments = await prisma.comment.findMany({
     where: { issueId },
     orderBy: { createdAt: "desc" },
+    include: { author: { select: { id: true, name: true } } },
   });
 
   return comments;
+};
+
+export const getCommentById = async (id: number) => {
+  const comment = await prisma.comment.findUnique({
+    where: { id },
+    include: { author: { select: { id: true, name: true } } },
+  });
+
+  return comment;
 };
 
 export const updateComment = async (
@@ -27,6 +38,7 @@ export const updateComment = async (
   const updatedComment = await prisma.comment.update({
     where: { id },
     data: commentData,
+    include: { author: { select: { id: true, name: true } } },
   });
 
   return updatedComment;
