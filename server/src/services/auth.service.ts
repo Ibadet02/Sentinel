@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { prisma } from "../prisma";
 import { createToken } from "../auth/jwt";
+import { AuthError } from "../error";
 
 const SALT_ROUNDS = 10;
 
@@ -26,11 +27,11 @@ export const login = async (data: { email: string; password: string }) => {
     where: { email },
   });
 
-  if (!user) throw new Error("Invalid credentials");
+  if (!user) throw new AuthError();
 
   const isValid = await bcrypt.compare(password, user.passwordHash);
 
-  if (!isValid) throw new Error("Invalid credentials");
+  if (!isValid) throw new AuthError;
 
   const token = createToken(user.id);
   const { passwordHash: _, ...safeUser } = user;

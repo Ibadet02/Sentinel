@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Prisma } from "../generated/prisma/client";
 import { z } from "zod";
+import { AuthError } from "../error";
 
 export const errorHandler = (
   err: Error,
@@ -20,7 +21,11 @@ export const errorHandler = (
     return;
   }
 
-  console.error(err);
+  if (err instanceof AuthError) {
+    res.status(401).json({ error: err.message });
+    return;
+  }
 
+  console.error(err);
   res.status(500).json({ error: "Internal server error" });
 };
